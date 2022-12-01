@@ -1,0 +1,32 @@
+import random 
+import math 
+
+def mod_pow(a, x, N):                       //N:소인수분해를 할 수, a:1~N 사이의 무작위 정수, x:?
+    y = 1                                   //y는 1로 시작한다.
+    while (x > 0):                          //x가 0보다 크다면 아래를 반복한다.
+        if ((x & 1) == 1):                  //x가 홀수라면?
+            y = (y * a) % N                 //y를 (y*a를 N으로 나눈 나머지)로 바꾼다.
+        x = x >> 1    ...(1)                //x/2 후 소숫점 버림
+        a = (a * a) % N                     //a를 (a*a를 N으로 나눈 나머지)로 바꾼다.
+    return y                                //반복구문 탈출 시 y를 리턴한다. x>0이 위 코드에서 불만족하려면, (1)에서 x가 1이어야한다.
+
+def findPeriodByModPow(N, a):               //N과 a의 값을 전달받는다.
+    for x in range(1, N):                   //x를 1~N까지 1씩 올리면서 반복한다.
+        if (mod_pow(a, x, N) == 1):         //만약 mod_pow 함수에 a, x, N을 넣어 받은 값이 1이라면
+            return x                        //r의 값으로써 x를 리턴한다.(이 함수 종료)
+    return -1                               //받은 값이 1인 x를 찾지 못했다면 r에 -1을 리턴한다.(아래 반복구문을 처음으로 이동시킴)
+
+def factorizeByShor(N):
+    while(True):                            //종료(리턴) 명령이 나올때까지 반복
+        a = random.randint(2, N - 1)        //무작위로 a를 설정
+        gcd = math.gcd(N, a)                //N,a의 최대공약수를 구함
+        if (gcd != 1):                      //만약 구한 최대공약수가 1이 아니라면, 
+            return gcd, N                   // gcd//최대공약수와 N/최대공약수를 정답으로써 리턴한다.
+        r = findPeriodByModPow(N, a)        //아니라면, r을 구한다.
+        if (r % 2 != 0):                    //만약 r이 홀수라면
+            continue                        //반복의 처음으로 이동
+        gcd1 = math.gcd(N, a**(r//2) + 1)   //r이 짝수라면
+        gcd2 = math.gcd(N, a**(r//2) - 1)   //N과 a^(r//2))+1,N과 a^(r//2))-1의 최대공약수를 찾는다.
+        if (gcd1 == 1 or N or gcd2 == 1 or N)://찾은 두 수 중 하나라도 1이거나 N이라면 반복을 처음부터 반복한다.
+            continue
+        return gcd1, gcd2                   //아니면 찾은 두 수를 리턴한다.
